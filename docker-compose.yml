@@ -1,0 +1,25 @@
+version: '3.5'
+
+services:
+  browser:
+    build:
+      context: .
+      dockerfile: browser.Dockerfile
+    image: lightray:browser
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      DISPLAY: unix:0.0
+      XAUTHORITY: /tmp/.docker.xauth
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp/.docker.xauth:/tmp/.docker.xauth
+    restart: unless-stopped
+    command: ["--kiosk", "http://server"]
+
+  server:
+    build:
+      context: .
+      dockerfile: server.Dockerfile
+    image: lightray:server
+    restart: unless-stopped
