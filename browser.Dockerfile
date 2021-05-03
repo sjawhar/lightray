@@ -1,16 +1,8 @@
-FROM arm32v7/debian:stretch
+FROM arm32v7/debian:buster
 
 RUN apt-get update \
  && apt-get install -y \
-        curl \
-        gnupg \
- && echo 'deb http://archive.raspberrypi.org/debian stretch main contrib non-free rpi' >> /etc/apt/sources.list \
- && curl -sSL http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | apt-key add - \
- && apt-get update \
- && apt-get install -y \
-        chromium-browser \
-        libnss3-tools \
-        libraspberrypi-dev \
+          chromium \
  && rm -rf /var/lib/apt/lists/*
 
 ARG BROWSER_UID=1000
@@ -21,7 +13,5 @@ RUN adduser --system --uid=${BROWSER_UID} browser \
 ENV DISPLAY unix:0.0
 
 USER browser
-ENTRYPOINT ["/usr/bin/chromium-browser"]
+ENTRYPOINT ["chromium"]
 CMD ["--kiosk", "http://server"]
-
-# TODO: Timezone

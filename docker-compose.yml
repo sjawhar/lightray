@@ -11,9 +11,10 @@ services:
     environment:
       DISPLAY: unix:0.0
       XAUTHORITY: /tmp/.docker.xauth
+      TZ: America/Los_Angeles
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
       - /tmp/.docker.xauth:/tmp/.docker.xauth
+      - /tmp/.X11-unix:/tmp/.X11-unix
     restart: unless-stopped
     command: ["--kiosk", "http://server"]
 
