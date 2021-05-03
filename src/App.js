@@ -36,18 +36,21 @@ class App extends Component {
     this.setState({ collapsed });
   };
 
-  onTimeChange = ({ startTime, endTime }) => {
-    // TODO: Check start before end
+  onTimeChange = ({ startTime: newStartTime, endTime: newEndTime }) => {
+    let startTime = newStartTime || this.state.startTime;
+    let endTime = newEndTime || this.state.endTime;
 
-    if (startTime) {
-      localStorage.setItem("startTime", startTime.format("HH:mm"));
-      this.setState({ startTime });
+    if (startTime >= endTime) {
+      if (newStartTime) {
+        endTime = startTime.add(30, "minutes");
+      } else if (newEndTime) {
+        startTime = endTime.subtract(30, "minutes");
+      }
     }
 
-    if (endTime) {
-      localStorage.setItem("endTime", endTime.format("HH:mm"));
-      this.setState({ endTime });
-    }
+    localStorage.setItem("endTime", endTime.format("HH:mm"));
+    localStorage.setItem("startTime", startTime.format("HH:mm"));
+    this.setState({ endTime, startTime });
   };
 
   render() {
