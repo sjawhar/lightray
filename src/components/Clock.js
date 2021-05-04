@@ -19,11 +19,15 @@ class Clock extends Component {
   }
 
   tick = () => {
-    const { startTime } = this.props;
+    const { startTime } = this.getTimes();
     const { lightSwitch, time: lastTime } = this.state;
     const time = moment();
     const newState = { time };
-    if (!lightSwitch && time >= startTime && lastTime <= startTime) {
+    if (
+      !lightSwitch &&
+      time.isSameOrAfter(startTime) &&
+      lastTime.isSameOrBefore(startTime)
+    ) {
       newState.lightSwitch = true;
     }
     this.setState(newState, this.illuminate);
@@ -31,7 +35,7 @@ class Clock extends Component {
 
   illuminate = () => {
     const { lightSwitch, time } = this.state;
-    const { endTime, startTime } = this.props;
+    const { endTime, startTime } = this.getTimes();
 
     const illumination =
       lightSwitch *
@@ -43,8 +47,21 @@ class Clock extends Component {
     this.setState({ lightSwitch: !this.state.lightSwitch }, this.illuminate);
   };
 
+  getTimes = () => {
+    const { time } = this.state;
+    const today = time.dayOfYear();
+    const startTime = this.props.startTime.clone().dayOfYear(today);
+    const endTime = this.props.endTime.clone().dayOfYear(today);
+
+    if (time.diff(moment.max(startTime, endTime), "hours") > 12) {
+      startTime.add(1, "day");
+      endTime.add(1, "day");
+    }
+    return { startTime, endTime };
+  };
+
   render() {
-    const { style: propStyles } = this.props;
+    const { style: propStyles = {} } = this.props;
     const { illumination, lightSwitch, time } = this.state;
     return (
       <div

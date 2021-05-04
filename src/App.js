@@ -40,11 +40,12 @@ class App extends Component {
     let startTime = newStartTime || this.state.startTime;
     let endTime = newEndTime || this.state.endTime;
 
-    if (startTime >= endTime) {
-      if (newStartTime) {
-        endTime = startTime.add(30, "minutes");
-      } else if (newEndTime) {
-        startTime = endTime.subtract(30, "minutes");
+    if (startTime.isSameOrAfter(endTime)) {
+      const duration = moment.duration(30, "minutes");
+      if (newEndTime) {
+        startTime = endTime.clone().subtract(duration);
+      } else {
+        endTime = startTime.clone().add(duration);
       }
     }
 
