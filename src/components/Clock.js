@@ -3,6 +3,8 @@ import { Button } from "antd";
 import { BulbFilled, BulbOutlined } from "@ant-design/icons";
 import moment from "moment";
 
+import { FORMAT_TIME } from "../constants";
+
 class Clock extends Component {
   state = {
     illumination: 0,
@@ -47,18 +49,10 @@ class Clock extends Component {
     this.setState({ lightSwitch: !this.state.lightSwitch }, this.illuminate);
   };
 
-  getTimes = () => {
-    const { time } = this.state;
-    const today = time.dayOfYear();
-    const startTime = this.props.startTime.clone().dayOfYear(today);
-    const endTime = this.props.endTime.clone().dayOfYear(today);
-
-    if (time.diff(moment.max(startTime, endTime), "hours") > 12) {
-      startTime.add(1, "day");
-      endTime.add(1, "day");
-    }
-    return { startTime, endTime };
-  };
+  getTimes = () => ({
+    endTime: moment(this.props.endTime, FORMAT_TIME),
+    startTime: moment(this.props.startTime, FORMAT_TIME),
+  });
 
   render() {
     const { style: propStyles = {} } = this.props;
@@ -79,7 +73,7 @@ class Clock extends Component {
           type="primary"
         />
         {illumination < 1 ? null : (
-          <div style={timeStyles}>{time.format("HH:mm")}</div>
+          <div style={timeStyles}>{time.format(FORMAT_TIME)}</div>
         )}
       </div>
     );

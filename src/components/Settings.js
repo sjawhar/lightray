@@ -1,5 +1,8 @@
 import React from "react";
 import { TimePicker } from "antd";
+import moment from "moment";
+
+import { FORMAT_TIME } from "../constants";
 
 const containerStyles = {
   display: "flex",
@@ -12,7 +15,7 @@ const containerStyles = {
 const timePickerProps = {
   allowClear: false,
   allowEmpty: false,
-  format: "HH:mm",
+  format: FORMAT_TIME,
   minuteStep: 5,
 };
 
@@ -21,13 +24,13 @@ function Settings({ endTime, onChange, startTime }) {
     <div style={containerStyles}>
       <TimePicker
         {...timePickerProps}
-        onChange={(startTime) => onChange({ startTime })}
-        value={startTime}
+        onChange={(newStartTime) => onChange({ startTime: newStartTime })}
+        value={moment(startTime, FORMAT_TIME)}
       />
       <TimePicker
         {...timePickerProps}
-        onChange={(endTime) => onChange({ endTime })}
-        value={endTime}
+        onChange={(newEndTime) => onChange({ endTime: newEndTime })}
+        value={moment(endTime, FORMAT_TIME)}
       />
     </div>
   );

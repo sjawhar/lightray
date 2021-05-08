@@ -8,6 +8,8 @@ import moment from "moment";
 import Clock from "./components/Clock";
 import Settings from "./components/Settings";
 
+import { FORMAT_TIME } from "./constants";
+
 const appStyle = {
   minHeight: "100vh",
 };
@@ -27,8 +29,8 @@ class App extends Component {
 
     this.state = {
       collapsed: true,
-      endTime: moment(endTime, "HH:mm"),
-      startTime: moment(startTime, "HH:mm"),
+      endTime: endTime,
+      startTime: startTime,
     };
   }
 
@@ -37,20 +39,23 @@ class App extends Component {
   };
 
   onTimeChange = ({ startTime: newStartTime, endTime: newEndTime }) => {
-    let startTime = newStartTime || this.state.startTime;
-    let endTime = newEndTime || this.state.endTime;
+    let startTimeObj =
+      newStartTime || moment(this.state.startTime, FORMAT_TIME);
+    let endTimeObj = newEndTime || moment(this.state.endTime, FORMAT_TIME);
 
-    if (startTime.isSameOrAfter(endTime)) {
+    if (startTimeObj.isSameOrAfter(endTimeObj)) {
       const duration = moment.duration(30, "minutes");
       if (newEndTime) {
-        startTime = endTime.clone().subtract(duration);
+        startTimeObj = endTimeObj.clone().subtract(duration);
       } else {
-        endTime = startTime.clone().add(duration);
+        endTimeObj = startTimeObj.clone().add(duration);
       }
     }
 
-    localStorage.setItem("endTime", endTime.format("HH:mm"));
-    localStorage.setItem("startTime", startTime.format("HH:mm"));
+    const startTime = startTimeObj.format(FORMAT_TIME);
+    const endTime = endTimeObj.format(FORMAT_TIME);
+    localStorage.setItem("endTime", endTime);
+    localStorage.setItem("startTime", startTime);
     this.setState({ endTime, startTime });
   };
 
@@ -74,7 +79,7 @@ class App extends Component {
           />
         </Layout.Sider>
         <Layout.Content style={appBodyStyles}>
-          <Clock style={{ flex: 1 }} endTime={endTime} startTime={startTime} />
+          <Clock endTime={endTime} startTime={startTime} style={{ flex: 1 }} />
         </Layout.Content>
       </Layout>
     );
