@@ -1,12 +1,18 @@
 import React, { Component } from "react";
 import { Button } from "antd";
-import { BulbFilled, BulbOutlined } from "@ant-design/icons";
+import {
+  BugFilled,
+  BugOutlined,
+  BulbFilled,
+  BulbOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 
 import { FORMAT_TIME } from "../constants";
 
 class Clock extends Component {
   state = {
+    debug: false,
     illumination: 0,
     lightSwitch: true,
     time: moment(),
@@ -70,7 +76,7 @@ class Clock extends Component {
 
   render() {
     const { style: propStyles = {} } = this.props;
-    const { endTime, lightSwitch, startTime, time } = this.state;
+    const { debug, endTime, lightSwitch, startTime, time } = this.state;
 
     const illumination =
       lightSwitch *
@@ -88,11 +94,30 @@ class Clock extends Component {
           icon={lightSwitch ? <BulbFilled /> : <BulbOutlined />}
           onClick={this.onSwitchFlip}
           size="large"
-          style={lightSwitchStyles}
+          style={{
+            ...buttonStyles,
+            left: 0,
+          }}
+          type="primary"
+        />
+        <Button
+          icon={debug ? <BugFilled /> : <BugOutlined />}
+          onClick={() => this.setState({ debug: !debug })}
+          size="large"
+          style={{
+            ...buttonStyles,
+            right: 0,
+          }}
           type="primary"
         />
         {illumination < 1 ? null : (
           <div style={displayStyles}>
+            {debug && startTime && endTime ? (
+              <div>
+                {startTime.format("MMM DD HH:mm")} -{" "}
+                {endTime.format("MMM DD HH:mm")}
+              </div>
+            ) : null}
             <div style={timeStyles}>{time.format(FORMAT_TIME)}</div>
             <div style={dateStyles}>{time.format("ddd, DD MMM, YYYY")}</div>
           </div>
@@ -109,13 +134,12 @@ const containerStyles = {
   textAlign: "center",
 };
 
-const lightSwitchStyles = {
+const buttonStyles = {
   background: "#333333",
   borderColor: "#333333",
-  borderTopRightRadius: 0,
+  borderRadius: 0,
   position: "absolute",
   bottom: 0,
-  left: 0,
 };
 
 const displayStyles = {
