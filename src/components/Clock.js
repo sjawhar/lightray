@@ -13,6 +13,7 @@ class Clock extends Component {
   };
 
   componentDidMount() {
+    this.setAlarm();
     this.timerID = setInterval(() => this.tick(), 1000);
   }
 
@@ -20,10 +21,17 @@ class Clock extends Component {
     clearInterval(this.timerID);
   }
 
-  tick = () => {
-    const { startTime } = this.getTimes();
+  componentDidUpdate(prevProps) {
+    this.setAlarm(prevProps);
+  }
+
+  tick = async () => {
     const { lightSwitch, time: lastTime } = this.state;
     const time = moment();
+    if (time.date() > lastTime.date()) {
+      await this.setAlarm();
+    }
+    const { startTime } = this.state;
     const newState = { time };
     if (
       !lightSwitch &&
@@ -32,31 +40,42 @@ class Clock extends Component {
     ) {
       newState.lightSwitch = true;
     }
-    this.setState(newState, this.illuminate);
+    this.setState(newState);
   };
 
-  illuminate = () => {
-    const { lightSwitch, time } = this.state;
-    const { endTime, startTime } = this.getTimes();
+  setAlarm = (prevProps) => {
+    const { endTime, startTime } = this.props;
+    if (
+      prevProps &&
+      endTime === prevProps.endTime &&
+      startTime === prevProps.startTime
+    ) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) =>
+      this.setState(
+        {
+          endTime: moment(endTime, FORMAT_TIME),
+          startTime: moment(startTime, FORMAT_TIME),
+        },
+        resolve
+      )
+    );
+  };
+
+  onSwitchFlip = () => {
+    this.setState({ lightSwitch: !this.state.lightSwitch });
+  };
+
+  render() {
+    const { style: propStyles = {} } = this.props;
+    const { endTime, lightSwitch, startTime, time } = this.state;
 
     const illumination =
       lightSwitch *
       Math.max(0, Math.min(1, (time - startTime) / (endTime - startTime)));
-    this.setState({ illumination });
-  };
 
-  onSwitchFlip = () => {
-    this.setState({ lightSwitch: !this.state.lightSwitch }, this.illuminate);
-  };
-
-  getTimes = () => ({
-    endTime: moment(this.props.endTime, FORMAT_TIME),
-    startTime: moment(this.props.startTime, FORMAT_TIME),
-  });
-
-  render() {
-    const { style: propStyles = {} } = this.props;
-    const { illumination, lightSwitch, time } = this.state;
     return (
       <div
         style={{
@@ -73,7 +92,10 @@ class Clock extends Component {
           type="primary"
         />
         {illumination < 1 ? null : (
-          <div style={timeStyles}>{time.format(FORMAT_TIME)}</div>
+          <div style={displayStyles}>
+            <div style={timeStyles}>{time.format(FORMAT_TIME)}</div>
+            <div style={dateStyles}>{time.format("ddd, DD MMM, YYYY")}</div>
+          </div>
         )}
       </div>
     );
@@ -96,10 +118,18 @@ const lightSwitchStyles = {
   left: 0,
 };
 
-const timeStyles = {
-  color: "black",
+const displayStyles = {
   flex: 1,
-  fontSize: "9em",
+  color: "black",
+};
+
+const timeStyles = {
+  fontSize: "8em",
+};
+
+const dateStyles = {
+  fontSize: "2em",
+  fontWeight: "bold",
 };
 
 export default Clock;

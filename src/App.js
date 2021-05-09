@@ -29,8 +29,8 @@ class App extends Component {
 
     this.state = {
       collapsed: true,
-      endTime: endTime,
-      startTime: startTime,
+      endTime: moment(endTime, FORMAT_TIME),
+      startTime: moment(startTime, FORMAT_TIME),
     };
   }
 
@@ -39,23 +39,20 @@ class App extends Component {
   };
 
   onTimeChange = ({ startTime: newStartTime, endTime: newEndTime }) => {
-    let startTimeObj =
-      newStartTime || moment(this.state.startTime, FORMAT_TIME);
-    let endTimeObj = newEndTime || moment(this.state.endTime, FORMAT_TIME);
+    let startTime = newStartTime || this.state.startTime;
+    let endTime = newEndTime || this.state.endTime;
 
-    if (startTimeObj.isSameOrAfter(endTimeObj)) {
+    if (startTime.isSameOrAfter(endTime)) {
       const duration = moment.duration(30, "minutes");
       if (newEndTime) {
-        startTimeObj = endTimeObj.clone().subtract(duration);
+        startTime = endTime.clone().subtract(duration);
       } else {
-        endTimeObj = startTimeObj.clone().add(duration);
+        endTime = startTime.clone().add(duration);
       }
     }
 
-    const startTime = startTimeObj.format(FORMAT_TIME);
-    const endTime = endTimeObj.format(FORMAT_TIME);
-    localStorage.setItem("endTime", endTime);
-    localStorage.setItem("startTime", startTime);
+    localStorage.setItem("endTime", endTime.format(FORMAT_TIME));
+    localStorage.setItem("startTime", startTime.format(FORMAT_TIME));
     this.setState({ endTime, startTime });
   };
 
@@ -79,7 +76,11 @@ class App extends Component {
           />
         </Layout.Sider>
         <Layout.Content style={appBodyStyles}>
-          <Clock endTime={endTime} startTime={startTime} style={{ flex: 1 }} />
+          <Clock
+            endTime={endTime.format(FORMAT_TIME)}
+            startTime={startTime.format(FORMAT_TIME)}
+            style={{ flex: 1 }}
+          />
         </Layout.Content>
       </Layout>
     );

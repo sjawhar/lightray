@@ -1,6 +1,5 @@
 import React from "react";
 import { TimePicker } from "antd";
-import moment from "moment";
 
 import { FORMAT_TIME } from "../constants";
 
@@ -25,12 +24,12 @@ function Settings({ endTime, onChange, startTime }) {
       <TimePicker
         {...timePickerProps}
         onChange={(newStartTime) => onChange({ startTime: newStartTime })}
-        value={moment(startTime, FORMAT_TIME)}
+        value={startTime}
       />
       <TimePicker
         {...timePickerProps}
         onChange={(newEndTime) => onChange({ endTime: newEndTime })}
-        value={moment(endTime, FORMAT_TIME)}
+        value={endTime}
       />
     </div>
   );
