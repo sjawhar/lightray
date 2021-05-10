@@ -1,5 +1,6 @@
 import React from "react";
-import { TimePicker } from "antd";
+import { Button, TimePicker } from "antd";
+import { BugFilled } from "@ant-design/icons";
 
 import { FORMAT_TIME } from "../constants";
 
@@ -18,7 +19,7 @@ const timePickerProps = {
   minuteStep: 5,
 };
 
-function Settings({ endTime, onChange, startTime }) {
+function Settings({ debug, endTime, onChange, onDebug, startTime }) {
   return (
     <div style={containerStyles}>
       <TimePicker
@@ -31,6 +32,14 @@ function Settings({ endTime, onChange, startTime }) {
         onChange={(newEndTime) => onChange({ endTime: newEndTime })}
         value={endTime}
       />
+      <Button
+        icon={<BugFilled />}
+        onClick={onDebug}
+        size="large"
+        type={debug ? "primary" : "default"}
+      >
+        Debug
+      </Button>
     </div>
   );
 }

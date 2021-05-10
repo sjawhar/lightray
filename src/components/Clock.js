@@ -1,18 +1,12 @@
 import React, { Component } from "react";
 import { Button } from "antd";
-import {
-  BugFilled,
-  BugOutlined,
-  BulbFilled,
-  BulbOutlined,
-} from "@ant-design/icons";
+import { BulbFilled, BulbOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 import { FORMAT_TIME } from "../constants";
 
 class Clock extends Component {
   state = {
-    debug: false,
     illumination: 0,
     lightSwitch: true,
     time: moment(),
@@ -74,9 +68,22 @@ class Clock extends Component {
     this.setState({ lightSwitch: !this.state.lightSwitch });
   };
 
+  getDebugText = () => {
+    const { endTime, startTime } = this.state;
+    if (!this.props.debug) {
+      return null;
+    }
+    const startTimeDay = startTime.format("DD MMM");
+    const endTimeDay = endTime.format("DD MMM");
+    if (startTimeDay === endTimeDay) {
+      return startTimeDay;
+    }
+    return `${startTimeDay} - ${endTimeDay}`;
+  };
+
   render() {
     const { style: propStyles = {} } = this.props;
-    const { debug, endTime, lightSwitch, startTime, time } = this.state;
+    const { endTime, lightSwitch, startTime, time } = this.state;
 
     const illumination =
       lightSwitch *
@@ -94,30 +101,12 @@ class Clock extends Component {
           icon={lightSwitch ? <BulbFilled /> : <BulbOutlined />}
           onClick={this.onSwitchFlip}
           size="large"
-          style={{
-            ...buttonStyles,
-            left: 0,
-          }}
-          type="primary"
-        />
-        <Button
-          icon={debug ? <BugFilled /> : <BugOutlined />}
-          onClick={() => this.setState({ debug: !debug })}
-          size="large"
-          style={{
-            ...buttonStyles,
-            right: 0,
-          }}
+          style={buttonStyles}
           type="primary"
         />
         {illumination < 1 ? null : (
           <div style={displayStyles}>
-            {debug && startTime && endTime ? (
-              <div>
-                {startTime.format("MMM DD HH:mm")} -{" "}
-                {endTime.format("MMM DD HH:mm")}
-              </div>
-            ) : null}
+            <div>{this.getDebugText()}</div>
             <div style={timeStyles}>{time.format(FORMAT_TIME)}</div>
             <div style={dateStyles}>{time.format("ddd, DD MMM, YYYY")}</div>
           </div>
@@ -138,8 +127,9 @@ const buttonStyles = {
   background: "#333333",
   borderColor: "#333333",
   borderRadius: 0,
-  position: "absolute",
   bottom: 0,
+  left: 0,
+  position: "absolute",
 };
 
 const displayStyles = {

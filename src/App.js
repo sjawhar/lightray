@@ -38,6 +38,10 @@ class App extends Component {
     this.setState({ collapsed });
   };
 
+  onDebug = () => {
+    this.setState({ debug: !this.state.debug });
+  };
+
   onTimeChange = ({ startTime: newStartTime, endTime: newEndTime }) => {
     let startTime = newStartTime || this.state.startTime;
     let endTime = newEndTime || this.state.endTime;
@@ -57,7 +61,7 @@ class App extends Component {
   };
 
   render() {
-    const { collapsed, endTime, startTime } = this.state;
+    const { collapsed, debug, endTime, startTime } = this.state;
     return (
       <Layout className="App" style={appStyle}>
         <Layout.Sider
@@ -70,13 +74,16 @@ class App extends Component {
           zeroWidthTriggerStyle={{ top: 0 }}
         >
           <Settings
+            debug={debug}
             endTime={endTime}
             onChange={this.onTimeChange}
+            onDebug={this.onDebug}
             startTime={startTime}
           />
         </Layout.Sider>
         <Layout.Content style={appBodyStyles}>
           <Clock
+            debug={debug}
             endTime={endTime.format(FORMAT_TIME)}
             startTime={startTime.format(FORMAT_TIME)}
             style={{ flex: 1 }}
