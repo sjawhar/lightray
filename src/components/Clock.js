@@ -7,7 +7,7 @@ import { FORMAT_TIME } from "../constants";
 
 class Clock extends Component {
   state = {
-    illumination: 0,
+    backlight: 0,
     lightSwitch: true,
     time: moment(),
   };
@@ -81,20 +81,49 @@ class Clock extends Component {
     return `${startTimeDay} - ${endTimeDay}`;
   };
 
-  render() {
-    const { style: propStyles = {} } = this.props;
+  interpolate = (start, end, progress) => {
+    return Math.round(start + progress * (end - start));
+  };
+
+  getBacklight = () => {
     const { endTime, lightSwitch, startTime, time } = this.state;
 
-    const illumination =
-      lightSwitch *
-      Math.max(0, Math.min(1, (time - startTime) / (endTime - startTime)));
+    const progress = Math.max(
+      0,
+      Math.min(1, (time - startTime) / (endTime - startTime))
+    );
+
+    const backlight = lightSwitch * (0.25 + 0.75 * progress);
+
+    if (backlight === 0) {
+      return {
+        backlight,
+        backgroundColor: "black",
+      };
+    }
+
+    const red = this.interpolate(100, 225, backlight);
+    const green = this.interpolate(155, 255, backlight);
+    const blue = this.interpolate(255, 255, backlight);
+
+    return {
+      backlight,
+      backgroundColor: `rgb(${red}, ${green}, ${blue})`,
+    };
+  };
+
+  render() {
+    const { style: propStyles = {} } = this.props;
+    const { lightSwitch, time } = this.state;
+
+    const { backlight, backgroundColor } = this.getBacklight();
 
     return (
       <div
         style={{
           ...containerStyles,
           ...propStyles,
-          backgroundColor: `rgba(155, 216, 255, ${illumination.toFixed(2)})`,
+          backgroundColor,
         }}
       >
         <Button
@@ -104,7 +133,7 @@ class Clock extends Component {
           style={buttonStyles}
           type="primary"
         />
-        {illumination < 1 ? null : (
+        {backlight < 1 ? null : (
           <div style={displayStyles}>
             <div>{this.getDebugText()}</div>
             <div style={timeStyles}>{time.format(FORMAT_TIME)}</div>
@@ -124,8 +153,8 @@ const containerStyles = {
 };
 
 const buttonStyles = {
-  background: "#333333",
-  borderColor: "#333333",
+  background: "rgb(31, 31, 31)",
+  borderColor: "rgb(31, 31, 31)",
   borderRadius: 0,
   bottom: 0,
   left: 0,
