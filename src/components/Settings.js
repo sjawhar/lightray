@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, TimePicker } from "antd";
-import { BugFilled } from "@ant-design/icons";
+import { BugFilled, ReloadOutlined } from "@ant-design/icons";
 
 import { FORMAT_TIME } from "../constants";
 
@@ -32,14 +32,29 @@ function Settings({ debug, endTime, onChange, onDebug, startTime }) {
         onChange={(newEndTime) => onChange({ endTime: newEndTime })}
         value={endTime}
       />
-      <Button
-        icon={<BugFilled />}
-        onClick={onDebug}
-        size="large"
-        type={debug ? "primary" : "default"}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          textAlign: "center",
+        }}
       >
-        Debug
-      </Button>
+        <Button
+          icon={<BugFilled />}
+          onClick={onDebug}
+          size="large"
+          type={debug ? "primary" : "default"}
+        >
+          Debug
+        </Button>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => window.close()}
+          size="large"
+        >
+          Restart
+        </Button>
+      </div>
     </div>
   );
 }

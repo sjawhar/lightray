@@ -93,7 +93,7 @@ class Clock extends Component {
       Math.min(1, (time - startTime) / (endTime - startTime))
     );
 
-    const backlight = lightSwitch * (0.25 + 0.75 * progress);
+    const backlight = lightSwitch * progress;
 
     if (backlight === 0) {
       return {
@@ -102,9 +102,9 @@ class Clock extends Component {
       };
     }
 
-    const red = this.interpolate(100, 225, backlight);
-    const green = this.interpolate(155, 255, backlight);
-    const blue = this.interpolate(255, 255, backlight);
+    const red = this.interpolate(25, 225, backlight);
+    const green = this.interpolate(50, 255, backlight);
+    const blue = this.interpolate(100, 255, backlight);
 
     return {
       backlight,
@@ -149,6 +149,7 @@ const containerStyles = {
   alignItems: "center",
   display: "flex",
   flexDirection: "row",
+  position: "relative",
   textAlign: "center",
 };
 
